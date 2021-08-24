@@ -47,6 +47,12 @@ export class CellularAutomaton<TCellState = boolean> implements ICellularAutomat
      * @returns {void}
      */
     protected validateGridCells(cells: ICell<TCellState>[]): void {
+        const numCells = this.width * this.height;
+
+        if (cells.length !== numCells) {
+            throw new Error(`${numCells - cells.length} cells missing`);
+        }
+
         // make an array with the correct number of items for our grid
         const indexes = (new Array(this.width * this.height)).fill(null);
 
