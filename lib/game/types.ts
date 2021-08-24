@@ -30,3 +30,36 @@ export interface IGrid {
      */
     neighbours(coordinates: TCoordinates): TCoordinates[];
 }
+
+export interface ICell<TState = boolean> {
+    readonly coordinates: TCoordinates;
+    readonly state: TState;
+}
+
+export interface IRule<TCellState> {
+    /**
+     * Applies the rule to a cell.
+     * 
+     * @param {TCell<TCellState>} cell
+     * @param {ICell[]} previousGeneration
+     * @return {ICell<TCellState>}
+     */
+    apply(
+        cell: ICell<TCellState>,
+        previousGeneration: ICell<TCellState>[],
+    ): ICell<TCellState>;
+}
+
+export interface ICellularAutomaton<TCellState> {
+    readonly height: number;
+    readonly rules: IRule<TCellState>[];
+    readonly width: number;
+
+    /**
+     * Generates the next frame given an existing one.
+     * 
+     * @param {ICell<TCellState>} cells
+     * @returns {ICell<TCellState>[]}
+     */
+    next(cells: ICell<TCellState>[]): ICell<TCellState>[];
+}
