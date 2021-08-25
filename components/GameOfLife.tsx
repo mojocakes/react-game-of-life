@@ -41,37 +41,9 @@ class GameOfLife extends React.Component<any, { cells: ICell[] }> {
     public render() {
         const { cells } = this.state;
         const gridSize = 800;
-        const cellSize = Math.sqrt((gridSize * gridSize) / cells.length);
-
-        // return (
-        //     <div
-        //         className="game-grid game-grid--game-of-life"
-        //         style={{
-        //             width: gridSize + 2,
-        //             height: gridSize + 2,
-        //         }}
-        //     >
-        //         {cells.map(cell => (
-        //             <div
-        //                 className="cell"
-        //                 data-live={cell.state.toString()}
-        //                 style={{
-        //                     width: cellSize,
-        //                     height: cellSize,
-        //                     background: cell.state ? 'black' : '#ddd',
-        //                 }}
-        //             />
-        //         ))}
-        //     </div>
-        // )
 
         return (
             <Canvas
-                // camera={{
-                //     fov: 100,
-                //     position: [50, 50, 10],
-                //     // rotation: [0, 0, 0], // doesn't work
-                // }}
                 dpr={[1, 2]}
                 shadows
                 style={{ width: gridSize, height: gridSize }}
@@ -91,19 +63,15 @@ class GameOfLife extends React.Component<any, { cells: ICell[] }> {
                 <OrbitControls
                     enablePan={true}
                     enableZoom={true}
-                    // maxPolarAngle={Math.PI / 1.8}
-                    // minPolarAngle={Math.PI / 1.8}
                 />
             </Canvas>
         );
     }
 
     renderCell(cell: ICell, index: number) {
-        const totalCells = this.game.width * this.game.height;
         const xWidth = 100 / this.game.width;
         const yHeight = 100 / this.game.height;
 
-        const size = 10;
         const xPosition = (cell.coordinates.x * xWidth) - xWidth;
         const yPosition = (cell.coordinates.y * yHeight) - yHeight;
 
