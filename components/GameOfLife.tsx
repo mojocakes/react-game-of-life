@@ -1,12 +1,12 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useGLTF, Environment, Stage, OrbitControls } from '@react-three/drei';
-import { randomCells, RuleOne, RuleTwo } from '../lib/GameOfLife';
+import { OrbitControls } from '@react-three/drei';
+import { randomCells, RuleOne } from '../lib/GameOfLife';
 import { CellularAutomaton } from '../lib/game/CellularAutomaton';
 import { ICell } from '../lib/game/types';
 
 class GameOfLife extends React.Component<any, { cells: ICell[] }> {
-    static refreshSpeed: number = 500;
+    static refreshSpeed: number = 250;
 
     protected game: CellularAutomaton;
     protected interval: number;
