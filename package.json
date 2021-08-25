@@ -5,23 +5,28 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
+        "export": "next export",
         "start": "next start",
         "test": "jest",
         "test:watch": "jest --watch"
     },
     "dependencies": {
+        "@react-three/drei": "^7.5.0",
+        "@react-three/fiber": "^7.0.6",
         "date-fns": "^2.11.1",
         "gray-matter": "^4.0.2",
         "next": "^11.0.0",
         "react": "17.0.2",
         "react-dom": "17.0.2",
         "remark": "^12.0.0",
-        "remark-html": "^12.0.0"
+        "remark-html": "^12.0.0",
+        "three": "^0.131.3"
     },
     "devDependencies": {
         "@types/jest": "^27.0.1",
         "@types/node": "^16.6.1",
         "@types/react": "^17.0.18",
+        "@types/three": "^0.131.0",
         "jest": "^27.0.6",
         "ts-jest": "^27.0.5",
         "typescript": "^4.3.5"

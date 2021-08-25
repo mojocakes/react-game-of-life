@@ -56,7 +56,7 @@ export const randomCells = (width: number, height: number): ICell[] => {
 
     return (new Array(width * height)).fill(null).map((val, index) => {
         const coordinates = grid.coordinates(index);
-        const state = Math.random() < 0.5;
+        const state = Math.random() < 0.1; // adjust value to make more or less living cells
         return new Cell(coordinates.x, coordinates.y, state);
     });
 }
