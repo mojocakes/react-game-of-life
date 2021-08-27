@@ -6,8 +6,13 @@ export class Cell<TState = boolean> implements ICell<TState> {
     public constructor(
         x: number,
         y: number,
-        public readonly state: TState
+        public state: TState
     ) {
         this.coordinates = { x, y };
+    }
+
+    public setState(state: TState): this {
+        this.state = state;
+        return this;
     }
 }

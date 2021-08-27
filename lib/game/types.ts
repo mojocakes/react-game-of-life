@@ -33,7 +33,8 @@ export interface IGrid {
 
 export interface ICell<TState = boolean> {
     readonly coordinates: TCoordinates;
-    readonly state: TState;
+    state: TState;
+    setState(state: TState): ICell<TState>;
 }
 
 export interface IRule<TCellState> {

@@ -1,15 +1,30 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import {
+    EffectComposer,
+    DepthOfField,
+    Bloom,
+    Noise,
+    Vignette,
+    Scanline,
+    Glitch,
+    Pixelation,
+    ChromaticAberration,
+} from '@react-three/postprocessing'
+import { BlendFunction, GlitchMode } from 'postprocessing'
 import { randomCells, RuleOne } from '../lib/GameOfLife';
 import { CellularAutomaton } from '../lib/game/CellularAutomaton';
 import { ICell } from '../lib/game/types';
+import { MeshStandardMaterial } from 'three';
 
 class GameOfLife extends React.Component<any, { cells: ICell[] }> {
-    static refreshSpeed: number = 250;
-
+    static refreshSpeed: number = 100;
+    
     protected game: CellularAutomaton;
     protected interval: number;
+    protected cells: ICell[] = [];
+    protected cellRefs: React.RefObject<MeshStandardMaterial>[] = [];
 
     public constructor(props) {
         super(props);
@@ -17,20 +32,25 @@ class GameOfLife extends React.Component<any, { cells: ICell[] }> {
         // bind methods
         this.renderCell = this.renderCell.bind(this);
 
-        const width = 50;
-        const height = 50;
+        const width = 40;
+        const height = 40;
 
         this.game = new CellularAutomaton(width, height, [
             new RuleOne(width, height),
-            // new RuleTwo(dimensions.width, dimensions.height),
         ]);
 
-        this.state = { cells: randomCells(width, height) };
+        this.cells = randomCells(width, height);
+        this.cells.forEach((cell, index) => {
+            this.cellRefs[index] = React.createRef();
+        });
 
         this.interval = (global as any).setInterval(() => {
-            this.setState(state => ({
-                cells: this.game.next(state.cells),
-            }));
+            this.cells = this.game.next(this.cells);
+
+            this.cells.forEach((cell, index) => {
+                const ref = this.cellRefs[index];
+                ref.current?.color.set(cell.state ? '#42c71a' : '#b50b5d');
+            });
         }, GameOfLife.refreshSpeed);
     }
 
@@ -39,7 +59,7 @@ class GameOfLife extends React.Component<any, { cells: ICell[] }> {
     }
 
     public render() {
-        const { cells } = this.state;
+        const cells = this.cells;
         const gridSize = 800;
 
         return (
@@ -48,22 +68,50 @@ class GameOfLife extends React.Component<any, { cells: ICell[] }> {
                 shadows
                 style={{ width: gridSize, height: gridSize }}
             >
-                <camera position={[-50, -30, -70]}>
+                <camera position={[-50, -20, -70]}>
                     <mesh
-                        rotation={[-0.5, 0, 0]}
-                        // rotation-x={-Math.PI / 2}
+                        rotation={[-0.7, 0, 0]}
                     >
                         {cells.map(this.renderCell)}
                     </mesh>
                 </camera>
-                <ambientLight intensity={1} />
-                <directionalLight color="purple" position={[0, 0, 5]} />
-                <color attach="background" args={['#381a40']} />
-                <fog attach="fog" args={['#270430', 50, 180]} />
+                <ambientLight intensity={0.6} />
+                <directionalLight color="orange" position={[0, 0, -80]} intensity={20} />
+                <color attach="background" args={['white']} />
+                <fog attach="fog" args={['red', 50, 200]} />
                 <OrbitControls
                     enablePan={true}
                     enableZoom={true}
                 />
+                <EffectComposer>
+                    <DepthOfField
+                        focusDistance={0.09}
+                        focalLength={0.06}
+                        bokehScale={2}
+                        height={500}
+                    />
+                    <Noise opacity={0.2} />
+                    {/* <Vignette eskil={false} offset={0.01} darkness={1.1} /> */}
+                    <Scanline
+                        blendFunction={BlendFunction.OVERLAY} // blend mode
+                        density={1.25}
+                    />
+                    <Glitch
+                        delay={[3, 5] as any} // min and max glitch delay
+                        duration={[0.1, 1] as any} // min and max glitch duration
+                        strength={[0.01, 0.5] as any} // min and max glitch strength
+                        mode={GlitchMode.SPORADIC} // glitch mode
+                        active // turn on/off the effect (switches between "mode" prop and GlitchMode.DISABLED)
+                        ratio={0.4} // Threshold for strong glitches, 0 - no weak glitches, 1 - no strong glitches.
+                    />
+                    {/* <ChromaticAberration
+                        blendFunction={BlendFunction.NORMAL} // blend mode
+                        offset={[0.004, 0.004] as any} // color offset
+                    /> */}
+                    {/* <Pixelation
+                        granularity={5} // pixel granularity
+                    /> */}
+                </EffectComposer>
             </Canvas>
         );
     }
@@ -76,11 +124,17 @@ class GameOfLife extends React.Component<any, { cells: ICell[] }> {
         const yPosition = (cell.coordinates.y * yHeight) - yHeight;
 
         return (
-            <mesh position={[xPosition, yPosition, 0]} scale={1} key={index}>
+            <mesh
+                position={[xPosition, yPosition, 0]} scale={1}
+                key={index}
+            >
                 <boxGeometry
                     args={[xWidth, xWidth, xWidth * 5]}
                 />
-                <meshStandardMaterial color={cell.state ? '#42c71a' : '#b50b5d'} />
+                <meshStandardMaterial
+                    color={cell.state ? '#42c71a' : '#b50b5d'}
+                    ref={this.cellRefs[index]}
+                />
             </mesh>
         );
     }
